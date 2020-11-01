@@ -18,6 +18,7 @@ public class EmployeePayrollDBService {
 	private static EmployeePayrollDBService employeePayrollDBService;
 	private java.sql.PreparedStatement employeePayrollDataStatement;
 	private List<EmployeePayrollData> employeePayrollList;
+	private Map<String, Integer> operationMap;
 
 	private EmployeePayrollDBService() {
 	}
@@ -134,5 +135,62 @@ public class EmployeePayrollDBService {
 				"SELECT * FROM employee_payroll_1 WHERE start BETWEEN CAST('%s' AS DATE) AND CAST('%s' AS DATE)", start,
 				end);
 		return getDataFromDatabaseBySQL(sql);
+	}
+
+	public Map<String, Integer> getCountByGender() throws EmployeeException {
+		String sql = "SELECT gender, COUNT(name) from employee_payroll_1 GROUP BY gender;";
+		operationMap = new HashMap<String, Integer>();
+		try (Connection connection = this.getConnection()) {
+			java.sql.Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				String gender = resultSet.getString("gender");
+				int count = resultSet.getInt("COUNT(name)");
+				operationMap.put(gender, count);
+			}
+			return operationMap;
+		} catch (EmployeeException e) {
+			throw new EmployeeException(e.getMessage(), e.type);
+		} catch (SQLException e) {
+			throw new EmployeeException(e.getMessage(), EmployeeException.ExceptionType.SQL_FAULT);
+		}
+	}
+
+	public Map<String, Integer> getLeastSalaryByGender() throws EmployeeException {
+		String sql = "SELECT gender, MIN(salary) from employee_payroll_1 GROUP BY gender;";
+		operationMap = new HashMap<String, Integer>();
+		try (Connection connection = this.getConnection()) {
+			java.sql.Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				String gender = resultSet.getString("gender");
+				int count = resultSet.getInt("MIN(salary)");
+				operationMap.put(gender, count);
+			}
+			return operationMap;
+		} catch (EmployeeException e) {
+			throw new EmployeeException(e.getMessage(), e.type);
+		} catch (SQLException e) {
+			throw new EmployeeException(e.getMessage(), EmployeeException.ExceptionType.SQL_FAULT);
+		}
+	}
+
+	public Map<String, Integer> getAverageSalaryByGender() throws EmployeeException {
+		String sql = "SELECT gender, AVG(salary) from employee_payroll_1 GROUP BY gender;";
+		operationMap = new HashMap<String, Integer>();
+		try (Connection connection = this.getConnection()) {
+			java.sql.Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				String gender = resultSet.getString("gender");
+				int count = resultSet.getInt("AVG(salary)");
+				operationMap.put(gender, count);
+			}
+			return operationMap;
+		} catch (EmployeeException e) {
+			throw new EmployeeException(e.getMessage(), e.type);
+		} catch (SQLException e) {
+			throw new EmployeeException(e.getMessage(), EmployeeException.ExceptionType.SQL_FAULT);
+		}
 	}
 }

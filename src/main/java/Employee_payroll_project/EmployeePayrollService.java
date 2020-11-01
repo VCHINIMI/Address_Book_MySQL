@@ -97,4 +97,19 @@ public class EmployeePayrollService {
 			this.employeePayRollList = employeePayrollDBService.getDataWithinDates(start, end);
 		return this.employeePayRollList;
 	}
+	
+	public Map<String, Integer> getCountByGender(IOService dbIo) throws EmployeeException {
+		Map<String, Integer> employeeCountByGenderMap = employeePayrollDBService.getCountByGender();
+		return employeeCountByGenderMap;
+	}
+
+	public Map<String, Integer> getLeastSalaryByGender() throws EmployeeException {
+		Map<String, Integer> employeeLeastSalaryMap = employeePayrollDBService.getLeastSalaryByGender();
+		return employeeLeastSalaryMap;
+	}
+
+	public Map<String, Integer> getAverageSalaryByGender() throws EmployeeException {
+		Map<String, Integer> employeeAverageSalaryMap = employeePayrollDBService.getAverageSalaryByGender();
+		return employeeAverageSalaryMap;
+	}
 }

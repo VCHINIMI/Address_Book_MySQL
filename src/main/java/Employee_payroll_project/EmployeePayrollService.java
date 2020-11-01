@@ -91,4 +91,10 @@ public class EmployeePayrollService {
 			this.employeePayRollList = employeePayrollDBService.readData();
 		return this.employeePayRollList;
 	}
+	
+	public List<EmployeePayrollData> readEmployeePayrollDataByDate(IOService ioService, String start, String end) throws EmployeeException {
+		if(ioService.equals(IOService.DB_IO))
+			this.employeePayRollList = employeePayrollDBService.getDataWithinDates(start, end);
+		return this.employeePayRollList;
+	}
 }

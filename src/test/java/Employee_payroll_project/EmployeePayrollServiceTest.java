@@ -57,4 +57,14 @@ public class EmployeePayrollServiceTest {
 		assertEquals((int) map.get("M"), 2000000);
 		assertEquals((int) map.get("F"), 3000000);
 	}
+	
+	@Test
+	public void givenNewAddedShouldBeInSyncWithDB() throws EmployeeException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		employeePayrollService.addEmployeeToPayroll("Mark","M",5000000,LocalDate.now());
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
+		assertTrue(result);
+	}
+	
 }

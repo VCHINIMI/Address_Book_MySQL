@@ -112,4 +112,8 @@ public class EmployeePayrollService {
 		Map<String, Integer> employeeAverageSalaryMap = employeePayrollDBService.getAverageSalaryByGender();
 		return employeeAverageSalaryMap;
 	}
+
+	public void addEmployeeToPayroll(String name, String gender, int salary, LocalDate date) throws EmployeeException {
+		employeePayRollList.add(employeePayrollDBService.addEmployeeToPayroll(name,gender,salary,date));
+	}
 }

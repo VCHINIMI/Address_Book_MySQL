@@ -10,11 +10,16 @@ import java.util.Scanner;
 public class EmployeePayrollService {
 	public static Scanner userInputScanner = new Scanner(System.in);
 	public EmployeePayrollFileIOService employeePayrollFileIOService = new EmployeePayrollFileIOService();
+	private EmployeePayrollDBService employeePayrollDBService ;
+	
+	public EmployeePayrollService() {
+		employeePayrollDBService = EmployeePayrollDBService.getInstance();
+	}
 
 	public enum IOService {
 		CONSOLE_IO, FILE_1O, DB_IO, REST_IO
 	}
-	
+
 	public static List<EmployeePayrollData> employeePayRollList;
 
 	public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList) {
@@ -22,7 +27,7 @@ public class EmployeePayrollService {
 	}
 
 	public void readEmployeePayrollData_UNUSE(IOService ioService) throws Exception {
-		if(ioService.equals(IOService.CONSOLE_IO)) {	
+		if (ioService.equals(IOService.CONSOLE_IO)) {
 			System.out.println("Enter Employee Id : ");
 			int id = userInputScanner.nextInt();
 			userInputScanner.nextLine();
@@ -31,8 +36,7 @@ public class EmployeePayrollService {
 			System.out.println("Enter salary");
 			int salary = userInputScanner.nextInt();
 			employeePayRollList.add(new EmployeePayrollData(id, name, salary));
-		}
-		else if(ioService.equals(IOService.FILE_1O)) {
+		} else if (ioService.equals(IOService.FILE_1O)) {
 			employeePayRollList = employeePayrollFileIOService.readFile();
 		}
 	}
@@ -59,5 +63,12 @@ public class EmployeePayrollService {
 		else if (ioService.equals(IOService.FILE_1O))
 			entries = employeePayrollFileIOService.countEntries();
 		return entries;
+	}
+
+//Read Employee	Payroll Data
+	public List<EmployeePayrollData> readEmployeePayrollData(IOService ioService) throws EmployeeException {
+		if (ioService.equals(IOService.DB_IO))
+			this.employeePayRollList = employeePayrollDBService.readData();
+		return this.employeePayRollList;
 	}
 }

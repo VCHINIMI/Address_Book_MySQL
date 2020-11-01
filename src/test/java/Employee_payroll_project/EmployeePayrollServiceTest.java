@@ -32,4 +32,29 @@ public class EmployeePayrollServiceTest {
 		System.out.println(employeePayrollData);
 		assertEquals(2, employeePayrollData.size());
 	}
+	
+
+	@Test
+	public void givenEmployeeDataInDB_ShouldReturnCountOfEmployee() throws EmployeeException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		Map<String, Integer> map = employeePayrollService.getCountByGender(IOService.DB_IO);
+		assertEquals((int) map.get("M"), 2);
+		assertEquals((int) map.get("F"), 1);
+	}	
+	
+	@Test
+	public void givenEmployeeDataInDB_ShouldReturnEmployeeByGender_ByMinSalary() throws EmployeeException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		Map<String, Integer> map = employeePayrollService.getLeastSalaryByGender();
+		assertEquals((int) map.get("M"), 1000000);
+		assertEquals((int) map.get("F"), 3000000);
+	}
+	
+	@Test
+	public void givenEmployeeDataInDB_ShouldReturnEmployeeByGender_ByAverageSalary() throws EmployeeException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		Map<String, Integer> map = employeePayrollService.getAverageSalaryByGender();
+		assertEquals((int) map.get("M"), 2000000);
+		assertEquals((int) map.get("F"), 3000000);
+	}
 }

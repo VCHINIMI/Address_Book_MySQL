@@ -11,6 +11,7 @@ public class EmployeePayrollService {
 	public static Scanner userInputScanner = new Scanner(System.in);
 	public EmployeePayrollFileIOService employeePayrollFileIOService = new EmployeePayrollFileIOService();
 	private EmployeePayrollDBService employeePayrollDBService ;
+	public static List<EmployeePayrollData> employeePayRollList;
 	
 	public EmployeePayrollService() {
 		employeePayrollDBService = EmployeePayrollDBService.getInstance();
@@ -19,8 +20,6 @@ public class EmployeePayrollService {
 	public enum IOService {
 		CONSOLE_IO, FILE_1O, DB_IO, REST_IO
 	}
-
-	public static List<EmployeePayrollData> employeePayRollList;
 
 	public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList) {
 		this.employeePayRollList = employeePayrollList;
@@ -63,6 +62,27 @@ public class EmployeePayrollService {
 		else if (ioService.equals(IOService.FILE_1O))
 			entries = employeePayrollFileIOService.countEntries();
 		return entries;
+	}
+	
+	public void updateEmployeeSalary(String name, double salary) throws EmployeeException {		
+		int result =  employeePayrollDBService.updateEmployeeData(name,salary);
+		if(result == 0)
+			return;
+		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+		if(employeePayrollData != null) employeePayrollData.employeeSalary = salary;
+	}
+	
+	@SuppressWarnings("static-access")
+	private EmployeePayrollData getEmployeePayrollData(String name) {
+		return this.employeePayRollList.stream()
+					.filter(employeePayrollDataItem -> employeePayrollDataItem.employeeName.equals(name))
+					.findFirst()
+					.orElse(null);
+	}
+	
+	public boolean checkEmployeePayrollInSyncWithDB(String name) throws EmployeeException {
+		List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
+		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 
 //Read Employee	Payroll Data

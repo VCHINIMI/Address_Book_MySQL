@@ -24,4 +24,12 @@ public class EmployeePayrollServiceTest {
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
 		assertTrue(result);
 	}
+	
+	@Test
+	public void givenStarAndEndDates_ShouldReturnEmployeeJoinedBetweenDates() throws EmployeeException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readEmployeePayrollDataByDate(IOService.DB_IO, "2016-01-01","2020-01-01");
+		System.out.println(employeePayrollData);
+		assertEquals(2, employeePayrollData.size());
+	}
 }

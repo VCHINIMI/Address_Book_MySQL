@@ -2,7 +2,7 @@ package Employee_payroll_project;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -115,5 +115,19 @@ public class EmployeePayrollService {
 
 	public void addEmployeeToPayroll(String name, String gender, int salary, LocalDate date) throws EmployeeException {
 		employeePayRollList.add(employeePayrollDBService.addEmployeeToPayroll(name,gender,salary,date));
+	}
+	
+	public List<EmployeePayrollData> deleteEmployee(String name, boolean isActive) throws EmployeeException {
+		int update = employeePayrollDBService.deleteEmployee(name, isActive);
+		if(update == 1) {
+			Iterator<EmployeePayrollData> itr = employeePayRollList.iterator();
+			while(itr.hasNext()) {
+				EmployeePayrollData employee = itr.next();
+				if(employee.employeeName.equals(name)) {
+					itr.remove();
+				}
+			}
+		}
+		return employeePayRollList;
 	}
 }

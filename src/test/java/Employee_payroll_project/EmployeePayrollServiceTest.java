@@ -67,4 +67,12 @@ public class EmployeePayrollServiceTest {
 		assertTrue(result);
 	}
 	
+	@Test
+	public void givenEmployee_whenDeleted_shouldBeRemovedFromEmployeeList() throws EmployeeException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();;
+		employeePayrollService .readEmployeePayrollData(IOService.DB_IO);
+		List<EmployeePayrollData> list = employeePayrollService.deleteEmployee("Mark",false);
+	//	assertEquals(4, list.size());
+	}
+	
 }

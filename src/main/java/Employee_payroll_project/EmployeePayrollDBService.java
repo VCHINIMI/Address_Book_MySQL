@@ -18,7 +18,7 @@ public class EmployeePayrollDBService {
 	private static EmployeePayrollDBService employeePayrollDBService;
 	private java.sql.PreparedStatement employeePayrollDataStatement;
 	private List<EmployeePayrollData> employeePayrollList;
-	
+
 	private EmployeePayrollDBService() {
 	}
 
@@ -36,7 +36,7 @@ public class EmployeePayrollDBService {
 			throw new EmployeeException(e.getMessage(), EmployeeException.ExceptionType.DATABASE_NOT_EXIST);
 		}
 	}
-	
+
 //Read Employee Data
 	public List<EmployeePayrollData> readData() throws EmployeeException {
 		String sql = "select * from employee_payroll_1;";
@@ -63,17 +63,17 @@ public class EmployeePayrollDBService {
 			throw new EmployeeException(e.getMessage(), EmployeeException.ExceptionType.SQL_FAULT);
 		}
 	}
-	
+
 //To get Instance of object
 	public static EmployeePayrollDBService getInstance() {
 		if (employeePayrollDBService == null)
 			employeePayrollDBService = new EmployeePayrollDBService();
 		return employeePayrollDBService;
 	}
-	
+
 	public int updateEmployeeData(String name, double salary) throws EmployeeException {
 		return this.updateEmployeeDetailsUsingStatement(name, salary);
-	}	
+	}
 
 	private int updateEmployeeDetailsUsingStatement(String name, double salary) throws EmployeeException {
 		String sql = String.format("update employee_payroll_1 set salary = %.2f where name = '%s';", salary, name);
@@ -102,7 +102,7 @@ public class EmployeePayrollDBService {
 		}
 		return employeePayrollList;
 	}
-	
+
 	public List<EmployeePayrollData> getEmployeePayrollData(String name) throws EmployeeException {
 		employeePayrollList = new ArrayList<EmployeePayrollData>();
 		if (this.employeePayrollDataStatement == null)
@@ -127,5 +127,12 @@ public class EmployeePayrollDBService {
 		} catch (SQLException e) {
 			throw new EmployeeException(e.getMessage(), EmployeeException.ExceptionType.CONNECTION_FAULT);
 		}
+	}
+
+	public List<EmployeePayrollData> getDataWithinDates(String start, String end) throws EmployeeException {
+		String sql = String.format(
+				"SELECT * FROM employee_payroll_1 WHERE start BETWEEN CAST('%s' AS DATE) AND CAST('%s' AS DATE)", start,
+				end);
+		return getDataFromDatabaseBySQL(sql);
 	}
 }

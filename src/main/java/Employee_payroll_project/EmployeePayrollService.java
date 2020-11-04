@@ -61,6 +61,8 @@ public class EmployeePayrollService {
 			entries = employeePayRollList.size();
 		else if (ioService.equals(IOService.FILE_1O))
 			entries = employeePayrollFileIOService.countEntries();
+		else if (ioService.equals(IOService.DB_IO))
+			entries = this.employeePayRollList.size();
 		return entries;
 	}
 	
@@ -113,8 +115,13 @@ public class EmployeePayrollService {
 		return employeeAverageSalaryMap;
 	}
 
-	public void addEmployeeToPayroll(String name, String gender, int salary, LocalDate date) throws EmployeeException {
-		employeePayRollList.add(employeePayrollDBService.addEmployeeToPayroll(name,gender,salary,date));
+	
+	public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate date)  {
+		try {
+			employeePayRollList.add(employeePayrollDBService.addEmployeeToPayroll(name,gender,salary,date));
+		} catch (EmployeeException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public List<EmployeePayrollData> deleteEmployee(String name, boolean isActive) throws EmployeeException {
@@ -129,5 +136,14 @@ public class EmployeePayrollService {
 			}
 		}
 		return employeePayRollList;
+	}
+
+	public void addEmployeesToPayroll(List<EmployeePayrollData> employeePayrollList) {
+		for(int i =0;i<employeePayrollList.size();i++) {
+			System.out.println("Employee being added : "+employeePayrollList.get(i).employeeName);
+			addEmployeeToPayroll(employeePayrollList.get(i).employeeName, employeePayrollList.get(i).gender, employeePayrollList.get(i).employeeSalary, employeePayrollList.get(i).start);
+			System.out.println("Employee Added : "+employeePayrollList.get(i).employeeName);
+		}
+		System.out.println(employeePayrollList);
 	}
 }

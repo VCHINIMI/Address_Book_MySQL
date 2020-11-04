@@ -2,7 +2,10 @@ package Employee_payroll_project;
 
 import static org.junit.Assert.*;
 import java.sql.ResultSet;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.junit.Test;
@@ -57,7 +60,7 @@ public class EmployeePayrollServiceTest {
 		assertEquals((int) map.get("M"), 2000000);
 		assertEquals((int) map.get("F"), 3000000);
 	}
-	
+
 	@Test
 	public void givenNewAddedShouldBeInSyncWithDB() throws EmployeeException {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
@@ -66,13 +69,33 @@ public class EmployeePayrollServiceTest {
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
 		assertTrue(result);
 	}
-	
+
+		
 	@Test
 	public void givenEmployee_whenDeleted_shouldBeRemovedFromEmployeeList() throws EmployeeException {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();;
 		employeePayrollService .readEmployeePayrollData(IOService.DB_IO);
 		List<EmployeePayrollData> list = employeePayrollService.deleteEmployee("Mark",false);
-	//	assertEquals(4, list.size());
+		assertEquals(3, list.size());
 	}
 	
+	@Test
+	public void given_Employee_WhenAddedToDB_ShouldMatchEmployeeEntries() throws EmployeeException {
+		EmployeePayrollData[] arrayOfEmployee = {
+				new EmployeePayrollData(0, "Jeff Bezos", "M", 1000000, LocalDate.now()),
+				new EmployeePayrollData(0, "Bill Gates", "M", 2000000, LocalDate.now()),
+				new EmployeePayrollData(0, "Mark Zukerberg", "M", 3000000, LocalDate.now()),
+				new EmployeePayrollData(0, "Sunder Picchai", "M", 6000000, LocalDate.now()),
+				new EmployeePayrollData(0, "Mukesh", "M", 1000000, LocalDate.now()),
+				new EmployeePayrollData(0, "Anil", "M", 2000000, LocalDate.now()),
+		};
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService() ;
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		Instant start = Instant.now();
+		employeePayrollService.addEmployeesToPayroll(Arrays.asList(arrayOfEmployee));
+		Instant end = Instant.now();
+		System.out.println("Duration without  thread : " + Duration.between(start, end));
+		assertEquals(6, employeePayrollService.countEntries(IOService.DB_IO));
+		
+	}	
 }

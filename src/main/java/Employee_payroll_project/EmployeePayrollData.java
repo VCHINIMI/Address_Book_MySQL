@@ -1,6 +1,7 @@
 package Employee_payroll_project;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class EmployeePayrollData {
 	public int employeeId;
@@ -20,8 +21,9 @@ public class EmployeePayrollData {
 		this(employeeId, employeeName, employeeSalary);
 		this.start = start;
 	}
-	
-	public EmployeePayrollData(int employeeId, String employeeName, String gender,double employeeSalary, LocalDate start) {
+
+	public EmployeePayrollData(int employeeId, String employeeName, String gender, double employeeSalary,
+			LocalDate start) {
 		this(employeeId, employeeName, employeeSalary, start);
 		this.gender = gender;
 	}
@@ -33,12 +35,16 @@ public class EmployeePayrollData {
 
 	@Override
 	public boolean equals(Object obj) {
-		if(this == obj) return true;
-		if(obj==null || getClass() !=obj.getClass()) return false;
+		if (this == obj)
+			return true;
+		if (obj == null || getClass() != obj.getClass())
+			return false;
 		EmployeePayrollData that = (EmployeePayrollData) obj;
-		return employeeId == that.employeeId && 
-				Double.compare(that.employeeSalary, employeeSalary) == 0 &&
-				employeeName.equals(that.employeeName);
+		return employeeId == that.employeeId && Double.compare(that.employeeSalary, employeeSalary) == 0
+				&& employeeName.equals(that.employeeName);
 	}
-	
+
+	public int hashCode() {
+		return Objects.hash(employeeName, gender, employeeSalary, start);
+	}
 }

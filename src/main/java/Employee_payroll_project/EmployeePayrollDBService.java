@@ -215,7 +215,7 @@ public class EmployeePayrollDBService {
 		return employeePayrollData ;
 	}
 
-	public EmployeePayrollData addEmployeeToPayroll(String name, String gender, int salary, LocalDate date) throws EmployeeException {
+	public EmployeePayrollData addEmployeeToPayroll(String name, String gender, double salary, LocalDate date) throws EmployeeException {
 		int employeeId = -1;
 		Connection connection = null ;
 		EmployeePayrollData employeePayrollData = null;
@@ -282,12 +282,16 @@ public class EmployeePayrollDBService {
 	}
 	
 	public int deleteEmployee(String name, boolean isActive) throws EmployeeException {
-		String sql = String.format("update employee_payroll set is_active =  %s where name = '%s';", isActive, name);
+		String sql = String.format("update employee_payroll_1 set is_active =  %s where name = '%s';", isActive, name);
 		try (Connection connection = this.getConnection()) {
 			java.sql.Statement statement = connection.createStatement();
 			return statement.executeUpdate(sql);
 		} catch (SQLException e) {
 			throw new EmployeeException(e.getMessage(), EmployeeException.ExceptionType.SQL_FAULT);
 		}
+	}
+
+	public long countEntries() {
+		return employeePayrollList.size();
 	}
 }

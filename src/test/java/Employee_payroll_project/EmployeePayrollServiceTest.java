@@ -12,7 +12,7 @@ import org.junit.Test;
 import Employee_payroll_project.EmployeePayrollService.IOService;
 
 public class EmployeePayrollServiceTest {
-
+/*
 	@Test
 	public void givenEmployeePayrollInDB_ShouldMatchEmployeeCount() throws EmployeeException {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
@@ -78,7 +78,7 @@ public class EmployeePayrollServiceTest {
 		List<EmployeePayrollData> list = employeePayrollService.deleteEmployee("Mark",false);
 		assertEquals(3, list.size());
 	}
-	
+*/	
 	@Test
 	public void given_Employee_WhenAddedToDB_ShouldMatchEmployeeEntries() throws EmployeeException {
 		EmployeePayrollData[] arrayOfEmployee = {
@@ -95,7 +95,10 @@ public class EmployeePayrollServiceTest {
 		employeePayrollService.addEmployeesToPayroll(Arrays.asList(arrayOfEmployee));
 		Instant end = Instant.now();
 		System.out.println("Duration without  thread : " + Duration.between(start, end));
-		assertEquals(6, employeePayrollService.countEntries(IOService.DB_IO));
-		
+		Instant threadStart = Instant.now();
+		employeePayrollService.addEmployeesToPayrollByThreads(Arrays.asList(arrayOfEmployee));
+		Instant threadEnd = Instant.now();
+		System.out.println("Duration with thread : " + Duration.between(threadStart, threadEnd));
+		assertEquals(12, employeePayrollService.countEntries(IOService.DB_IO));
 	}	
 }

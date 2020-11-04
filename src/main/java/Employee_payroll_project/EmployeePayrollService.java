@@ -2,6 +2,7 @@ package Employee_payroll_project;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -145,5 +146,29 @@ public class EmployeePayrollService {
 			System.out.println("Employee Added : "+employeePayrollList.get(i).employeeName);
 		}
 		System.out.println(employeePayrollList);
+	}
+
+	public void addEmployeesToPayrollByThreads(List<EmployeePayrollData> asList) {
+		Map<Integer, Boolean> employeeAdditionStatus = new HashMap<Integer,Boolean>();
+		employeePayRollList.forEach(emp -> {
+			Runnable task = () -> {
+				employeeAdditionStatus.put(emp.hashCode(), false);
+				System.out.println("Employee Being Added : "+ Thread.currentThread().getName());
+				this.addEmployeeToPayroll(emp.employeeName, emp.gender, emp.employeeSalary, emp.start);
+				employeeAdditionStatus.put(emp.hashCode(), true);
+				System.out.println("Emp Added" + Thread.currentThread().getName());
+			};
+			Thread thread = new Thread(task, emp.employeeName);
+			thread.start();
+			
+		});
+		while(employeeAdditionStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			}
+			catch(InterruptedException e) {
+				System.out.println(e.getMessage());
+			}
+		}
 	}
 }

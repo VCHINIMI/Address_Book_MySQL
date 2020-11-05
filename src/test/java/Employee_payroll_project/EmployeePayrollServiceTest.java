@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Test;
@@ -100,5 +101,21 @@ public class EmployeePayrollServiceTest {
 		Instant threadEnd = Instant.now();
 		System.out.println("Duration with thread : " + Duration.between(threadStart, threadEnd));
 		assertEquals(12, employeePayrollService.countEntries(IOService.DB_IO))   ;
-	}	
+	}
+	
+	@Test
+	public void givenNewSalary_whenUpdated_shouldMatch() throws EmployeeException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService() ;
+		List<EmployeePayrollData> list = employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		Map<Integer, Double> nameSalaryMap = new HashMap<>();
+		nameSalaryMap.put(216, (double) 11000);
+//		nameSalaryMap.put(31, (double) 50000);
+//		nameSalaryMap.put(77, (double) 20000);
+		Instant start = Instant.now();
+		employeePayrollService.updateSalary(nameSalaryMap);
+		Instant end =Instant.now();
+		System.out.println("Duration with thread: "+ Duration.between(start, end));
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mukesh");
+		assertTrue(result);
+	}
 }

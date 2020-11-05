@@ -22,7 +22,8 @@ public class EmployeePayrollDBService {
 	private java.sql.PreparedStatement employeePayrollDataStatement;
 	private List<EmployeePayrollData> employeePayrollList;
 	private Map<String, Integer> operationMap;
-
+	private int connectionCounter = 0;
+	
 	private EmployeePayrollDBService() {
 	}
 
@@ -32,9 +33,14 @@ public class EmployeePayrollDBService {
 			String userName = "root";
 			String password = "root";
 			Connection connection;
-			System.out.println("Connecting to Database" + jdbcURL);
+			System.out.println("Processing thread "+ Thread.currentThread().getName()+
+							   "Connecting to db with id  :"+connectionCounter);
+//			System.out.println("Connecting to Database" + jdbcURL);
 			connection = DriverManager.getConnection(jdbcURL, userName, password);
-			System.out.println("successfull" + connection);
+//			System.out.println("successfull" + connection);
+			System.out.println("Processing Thread "+Thread.currentThread().getName()
+							   + " Connecting to database with iD: "+connectionCounter + " Connection success!!! "+ connection);
+			connectionCounter++;
 			return connection;
 		} catch (SQLException e) {
 			throw new EmployeeException(e.getMessage(), EmployeeException.ExceptionType.DATABASE_NOT_EXIST);
@@ -291,7 +297,75 @@ public class EmployeePayrollDBService {
 		}
 	}
 
-	public long countEntries() {
-		return employeePayrollList.size();
+	public int updateUsingPreparedStatement(int id, double salary) throws EmployeeException {
+		Connection connection = null ;
+		try {
+			connection = getConnection();
+			connection.setAutoCommit(false);
+		} catch(SQLException e) {
+			throw new EmployeeException(e.getMessage(), EmployeeException.ExceptionType.SQL_FAULT);
+		}
+		try {
+			String sql = "update employee_payroll_1 set salary = ? where id = ?;";
+			employeePayrollDataStatement = connection.prepareStatement(sql);
+			employeePayrollDataStatement.setDouble(1, salary);
+			employeePayrollDataStatement.setInt(2, id);
+			int rowAffected = employeePayrollDataStatement.executeUpdate();
+			System.out.println("row Affected first  "+ id+ "    " + rowAffected);		
+			if(rowAffected == 0) {
+				return 0;
+			}
+		}  catch(SQLException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				throw new EmployeeException(e.getMessage(), EmployeeException.ExceptionType.SQL_FAULT);
+			}
+		}
+		try (java.sql.Statement statement = connection.createStatement()) {
+			double deductions = salary * 0.2;
+			double taxablePay = salary - deductions;
+			double tax = taxablePay * 0.1;
+			double netPay = salary - tax;
+			String sql = "update payroll_details_1 set basic_pay = ?, deductions = ?, taxable_pay = ?, tax = ?, net_pay = ? where employee_id = ? ;";
+			employeePayrollDataStatement = connection.prepareStatement(sql);
+			employeePayrollDataStatement.setDouble(1, salary);
+			employeePayrollDataStatement.setDouble(2, deductions);
+			employeePayrollDataStatement.setDouble(3, taxablePay);
+			employeePayrollDataStatement.setDouble(4, tax);
+			employeePayrollDataStatement.setDouble(5, netPay);
+			employeePayrollDataStatement.setInt(6, id);
+			int rowAffected = employeePayrollDataStatement.executeUpdate();
+			System.out.println("row Affected second  " + id + "   " + rowAffected);
+			if (rowAffected == 0) {
+				return 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				e.printStackTrace();
+				throw new EmployeeException(e.getMessage(), EmployeeException.ExceptionType.SQL_FAULT);
+			}
+		}
+		// for final committing
+		try {
+			connection.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new EmployeeException(e.getMessage(), EmployeeException.ExceptionType.SQL_FAULT);
+		}
+		// closing the connection
+		finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					throw new EmployeeException(e.getMessage(), EmployeeException.ExceptionType.SQL_FAULT);
+				}
+			}
+		}
+		return 1;
 	}
 }

@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import Employee_payroll_project.EmployeePayrollService.IOService;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 
 public class EmployeePayrollServiceTest {
 /*
@@ -141,7 +142,7 @@ public class EmployeePayrollServiceTest {
 		EmployeePayrollService employeePayrollService;
 		employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayofEmps));
 		long entries = employeePayrollService.countEntries(IOService.REST_IO);
-		assertEquals(3, entries);
+		assertEquals(2, entries);
 	}
 
 	private EmployeePayrollData[] getEmployeeList() {
@@ -149,6 +150,30 @@ public class EmployeePayrollServiceTest {
 		System.out.println("Entries : \n"+ response.asString());
 		EmployeePayrollData[] array = new Gson().fromJson(response.asString(), EmployeePayrollData[].class);
 		return array;
-	}	
+	}
+	
+	@Test
+	public void givenNewEmployee_ShouldMatchResponseAndCount() {
+		EmployeePayrollData[] arrayofEmps = getEmployeeList();
+		EmployeePayrollService employeePayrollService;
+		employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayofEmps));
+		EmployeePayrollData employeePayrollData = new EmployeePayrollData(0, "Mark", "M", 400000, LocalDate.now());
+		Response response = addEmployeeToJsonServer(employeePayrollData);
+		int statusCode = response.statusCode();
+		assertEquals(201, statusCode);
+		
+		employeePayrollData = new Gson().fromJson(response.asString(), EmployeePayrollData.class);
+		employeePayrollService.addEmployeesToPayroll(employeePayrollData,IOService.REST_IO);
+		long entries = employeePayrollService.countEntries(IOService.REST_IO);
+		assertEquals(3, entries);
+	}
+
+	private Response addEmployeeToJsonServer(EmployeePayrollData employeePayrollData) {
+		String empJson = new Gson().toJson(employeePayrollData);
+		RequestSpecification request = RestAssured.given();
+		request.header("Content-Type","application/json");
+		request.body(empJson);
+		return request.post("/employees");
+	}
 	
 }

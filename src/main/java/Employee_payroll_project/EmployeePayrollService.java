@@ -75,8 +75,7 @@ public class EmployeePayrollService {
 		if(employeePayrollData != null) employeePayrollData.employeeSalary = salary;
 	}
 	
-	@SuppressWarnings("static-access")
-	private EmployeePayrollData getEmployeePayrollData(String name) {
+	@SuppressWarnings("static-access") public EmployeePayrollData getEmployeePayrollData(String name) {
 		return this.employeePayRollList.stream()
 					.filter(employeePayrollDataItem -> employeePayrollDataItem.employeeName.equals(name))
 					.findFirst()
@@ -182,7 +181,7 @@ public class EmployeePayrollService {
 					if(result == 0)
 						return;
 					employeePayRollList.forEach(employee -> {
-						if(employee.employeeId == id) 
+						if(employee.id == id) 
 							employee.employeeSalary = salary;
 					});
 				} catch (EmployeeException e) {
@@ -214,5 +213,15 @@ public class EmployeePayrollService {
 		}
 		else 
 			employeePayRollList.add(employeePayrollData);
+	}
+
+	public void updateEmployeeSalary(String name, int salary, IOService ioService) {
+		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+		if(employeePayrollData !=null) employeePayrollData.employeeSalary = salary;
+	}
+
+	public void deletePayrollData(String name) {
+		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+		employeePayRollList.remove(employeePayrollData);
 	}
 }

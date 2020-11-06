@@ -1,6 +1,8 @@
 package Employee_payroll_project;
 
 import static org.junit.Assert.*;
+
+import java.security.PublicKey;
 import java.sql.ResultSet;
 import java.time.Duration;
 import java.time.Instant;
@@ -9,8 +11,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.google.gson.Gson;
+
 import Employee_payroll_project.EmployeePayrollService.IOService;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 
 public class EmployeePayrollServiceTest {
 /*
@@ -79,7 +89,7 @@ public class EmployeePayrollServiceTest {
 		List<EmployeePayrollData> list = employeePayrollService.deleteEmployee("Mark",false);
 		assertEquals(3, list.size());
 	}
-*/	
+	
 	@Test
 	public void given_Employee_WhenAddedToDB_ShouldMatchEmployeeEntries() throws EmployeeException {
 		EmployeePayrollData[] arrayOfEmployee = {
@@ -118,4 +128,27 @@ public class EmployeePayrollServiceTest {
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mukesh");
 		assertTrue(result);
 	}
+*/	
+	@Before
+	public void setup() {
+		RestAssured.baseURI = "http://localhost";
+		RestAssured.port = 3000;
+	}
+	
+	@Test
+	public void test1() {
+		EmployeePayrollData[] arrayofEmps = getEmployeeList();
+		EmployeePayrollService employeePayrollService;
+		employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayofEmps));
+		long entries = employeePayrollService.countEntries(IOService.REST_IO);
+		assertEquals(3, entries);
+	}
+
+	private EmployeePayrollData[] getEmployeeList() {
+		Response response = RestAssured.get("/employees");
+		System.out.println("Entries : \n"+ response.asString());
+		EmployeePayrollData[] array = new Gson().fromJson(response.asString(), EmployeePayrollData[].class);
+		return array;
+	}	
+	
 }

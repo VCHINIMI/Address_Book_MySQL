@@ -203,4 +203,16 @@ public class EmployeePayrollService {
 			}
 		}
 	}
+
+	public void addEmployeesToPayroll(EmployeePayrollData employeePayrollData, IOService ioService) {
+		if(ioService.equals(IOService.DB_IO))	{
+			try {
+				employeePayRollList.add(employeePayrollDBService.addEmployeeToPayroll(employeePayrollData.employeeName,employeePayrollData.gender,employeePayrollData.employeeSalary,employeePayrollData.start));
+			} catch (EmployeeException e) {
+				e.printStackTrace();
+			}
+		}
+		else 
+			employeePayRollList.add(employeePayrollData);
+	}
 }

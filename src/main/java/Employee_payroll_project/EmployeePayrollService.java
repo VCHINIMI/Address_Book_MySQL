@@ -23,7 +23,7 @@ public class EmployeePayrollService {
 	}
 
 	public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList) {
-		this.employeePayRollList = employeePayrollList;
+		this.employeePayRollList = new ArrayList<>(employeePayrollList);
 	}
 
 	public void readEmployeePayrollData_UNUSE(IOService ioService) throws Exception {
@@ -64,7 +64,7 @@ public class EmployeePayrollService {
 			entries = employeePayrollFileIOService.countEntries();
 		else if (ioService.equals(IOService.DB_IO))
 			entries = this.employeePayRollList.size();
-		return entries;
+		return this.employeePayRollList.size();
 	}
 	
 	public void updateEmployeeSalary(String name, double salary) throws EmployeeException {		

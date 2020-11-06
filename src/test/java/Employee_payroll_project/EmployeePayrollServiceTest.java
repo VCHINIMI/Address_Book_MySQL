@@ -186,6 +186,22 @@ public class EmployeePayrollServiceTest {
 		int statusCode = response.statusCode();
 		assertEquals(200, statusCode);
 	}
+	
+	@Test
+	public void deleteTest() {
+		EmployeePayrollData[] arrayofEmps = getEmployeeList();
+		EmployeePayrollService employeePayrollService;
+		employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayofEmps));
+		EmployeePayrollData employeePayrollData = employeePayrollService.getEmployeePayrollData("Jeff Bezos");
+		employeePayrollService.deletePayrollData("Jeff Bezos");
+		RequestSpecification requestSpecification = RestAssured.given();
+		requestSpecification.header("Content-Type","application/json");
+		Response response = requestSpecification.delete("/employees/" + employeePayrollData.id);
+		int statusCode = response.statusCode();
+		assertEquals(200, statusCode);
+		long entries = employeePayrollService.countEntries(IOService.REST_IO);
+		assertEquals(2, entries);
+	}
 
 	private Response addEmployeeToJsonServer(EmployeePayrollData employeePayrollData) {
 		String empJson = new Gson().toJson(employeePayrollData);
